@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#F7F5FA">
+    <title>Pride Check! | บุคลิกไหน ที่ใช่คุณ</title>
+    
+    <!-- Google Fonts: Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Pride Colors */
+            --pride-red: #E50000;
+            --pride-orange: #FF8D00;
+            --pride-yellow: #F0CC00; /* Adjusted for better contrast on light */
+            --pride-green: #028F00;
+            --pride-blue: #004CFF;
+            --pride-purple: #8B00FF;
+            
+            /* Light Theme Colors */
+            --bg-main: #F7F5FA; /* Soft light lavender/grey */
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --text-main: #1D1128; /* Dark purple/black */
+            --text-sec: #685E73; /* Muted dark grey/purple */
+            
+            /* Gradients */
+            --rainbow-grad: linear-gradient(90deg, var(--pride-red) 0%, var(--pride-orange) 18%, var(--pride-yellow) 36%, var(--pride-green) 54%, var(--pride-blue) 72%, var(--pride-purple) 100%);
+            --rainbow-grad-animated: linear-gradient(270deg, var(--pride-red), var(--pride-orange), var(--pride-yellow), var(--pride-green), var(--pride-blue), var(--pride-purple), var(--pride-red));
+            
+            /* Safe Areas for Mobile */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+            overscroll-behavior: none;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animated Background Mesh (Light Version) */
+        .bg-mesh {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 30%, rgba(139, 0, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 70%, rgba(229, 0, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0, 76, 255, 0.06) 0%, transparent 60%);
+            animation: breathe 15s infinite alternate ease-in-out;
+        }
+
+        @keyframes breathe {
+            0% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* Layout & Screens */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            width: 100%;
+            padding: calc(20px + var(--safe-top)) 20px calc(40px + var(--safe-bottom)) 20px;
+            animation: fadeIn 0.4s ease forwards;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .screen.active { display: flex; }
+        .container { width: 100%; max-width: 450px; margin: 0 auto; text-align: center; }
+        .container-game { width: 100%; max-width: 768px; margin: 0 auto; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glassmorphism Panels (Light Mode) */
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 40px rgba(139, 0, 255, 0.08), inset 0 0 0 1px rgba(255,255,255,0.5);
+            border-radius: 28px;
+            padding: 35px 25px;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Typography */
+        h1 { font-size: clamp(2rem, 6vw, 2.5rem); font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; line-height: 1.2; }
+        h2 { font-size: clamp(1.5rem, 5vw, 1.8rem); font-weight: 700; margin-bottom: 24px; }
+        h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; color: var(--text-main); }
+        p { font-size: 0.95rem; font-weight: 400; color: var(--text-sec); line-height: 1.6; }
+        
+        .text-rainbow {
+            background: var(--rainbow-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            /* subtle shadow for readability on light */
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.05); 
+        }
+        
+        .divider {
+            width: 60px; height: 4px;
+            background: var(--rainbow-grad);
+            margin: 0 auto 30px auto;
+            border-radius: 20px;
+            opacity: 0.8;
+        }
+
+        /* Buttons */
+        .btn-rainbow {
+            background: var(--rainbow-grad-animated);
+            background-size: 200% 200%;
+            animation: gradientShift 4s ease infinite;
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(229, 0, 0, 0.25), 0 0 15px rgba(139, 0, 255, 0.15);
+            margin-top: 20px;
+        }
+        .btn-rainbow:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(229, 0, 0, 0.3), 0 0 20px rgba(139, 0, 255, 0.2); }
+        .btn-rainbow:active { transform: scale(0.96); }
+        
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* Gender Buttons Grid */
+        .gender-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .btn-gender {
+            background: #FFFFFF;
+            border: 2px solid #EAE3F2;
+            color: var(--text-main);
+            padding: 18px 24px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .btn-gender:active { transform: scale(0.97); }
+        .btn-gender.selected {
+            background: #FDFBFF;
+            border-color: transparent;
+            box-shadow: 0 0 0 2px var(--pride-purple), 0 8px 20px rgba(139, 0, 255, 0.15);
+            transform: scale(1.02);
+            color: var(--pride-purple);
+        }
+        
+        .btn-text {
+            background: transparent; border: none; color: var(--text-sec);
+            padding: 12px 24px; font-size: 0.95rem; font-weight: 500;
+            cursor: pointer; transition: color 0.2s; margin-top: 8px; border-radius: 16px;
+        }
+        .btn-text:hover { color: var(--text-main); }
+
+        /* How to Play List */
+        .rules-list { text-align: left; margin-bottom: 10px; }
+        .rule-item { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; }
+        .rule-number {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--rainbow-grad);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: white; flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(139,0,255,0.2);
+        }
+        .rule-item p { margin: 0; padding-top: 4px; }
+        .rule-item strong { color: var(--text-main); font-weight: 600; }
+
+        /* Game Area */
+        .hud {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); backdrop-filter: blur(20px);
+            padding: 15px 25px; border-radius: 50px;
+            margin-bottom: 20px; width: 100%; border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+        }
+        .hud-text { font-size: 0.95rem; color: var(--text-sec); font-weight: 500; }
+        .hud-value { font-size: 1.2rem; color: var(--text-main); font-weight: 700; margin-left: 5px; }
+        
+        .progress-dots { display: flex; gap: 8px; }
+        .progress-dot {
+            width: 14px; height: 14px; border-radius: 50%;
+            background: #EAE3F2; transition: all 0.3s ease;
+        }
+        .progress-dot.filled { background: var(--rainbow-grad); box-shadow: 0 0 8px rgba(139,0,255,0.3); }
+
+        .game-area-container {
+            position: relative; width: 100%; border-radius: 20px; padding: 4px;
+            background: var(--rainbow-grad); box-shadow: 0 10px 40px rgba(139, 0, 255, 0.2);
+        }
+        #game-image-wrapper { position: relative; width: 100%; border-radius: 16px; overflow: hidden; background-color: #FFF; }
+        #game-image { display: block; width: 100%; height: auto; pointer-events: none; user-select: none; }
+        #marker-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
+
+        /* Markers */
+        .marker { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; z-index: 10; }
+        .marker.correct {
+            border: 3px solid var(--pride-green); background: rgba(2, 143, 0, 0.2);
+            box-shadow: 0 0 15px var(--pride-green), inset 0 0 10px var(--pride-green);
+            animation: pulseSuccess 0.6s ease-out forwards;
+        }
+        .marker.wrong {
+            border: 3px solid var(--pride-red); background: rgba(229, 0, 0, 0.2);
+            box-shadow: 0 0 15px var(--pride-red), inset 0 0 10px var(--pride-red);
+            animation: shakeError 0.4s ease-in-out forwards;
+        }
+
+        @keyframes pulseSuccess { 0% { width: 0; height: 0; opacity: 1; } 50% { width: 44px; height: 44px; opacity: 0.8; } 100% { width: 34px; height: 34px; opacity: 1; } }
+        @keyframes shakeError {
+            0% { transform: translate(-50%, -50%); width:0; height:0;}
+            20% { transform: translate(calc(-50% - 6px), -50%); width:34px; height:34px;}
+            40% { transform: translate(calc(-50% + 6px), -50%); }
+            60% { transform: translate(calc(-50% - 4px), -50%); }
+            80% { transform: translate(calc(-50% + 4px), -50%); }
+            100% { transform: translate(-50%, -50%); width:28px; height:28px;}
+        }
+
+        /* Result Screen Decor */
+        .result-decor-1 { position: absolute; top: -40px; right: -40px; width: 150px; height: 150px; background: var(--pride-purple); border-radius: 50%; filter: blur(50px); opacity: 0.15; z-index: 0; pointer-events: none; }
+        .result-decor-2 { position: absolute; bottom: -40px; left: -40px; width: 150px; height: 150px; background: var(--pride-orange); border-radius: 50%; filter: blur(50px); opacity: 0.15; z-index: 0; pointer-events: none;}
+        .result-content { position: relative; z-index: 10; }
+        .result-label { font-size: 0.85rem; font-weight: 700; color: var(--text-sec); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
+        .result-title { font-size: clamp(1.8rem, 5vw, 2.2rem); font-weight: 800; margin-bottom: 20px; line-height: 1.3; }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(247, 245, 250, 0.85); backdrop-filter: blur(8px);
+            z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        #loading-overlay.visible { opacity: 1; pointer-events: all; }
+        
+        .loader {
+            width: 50px; height: 50px;
+            border: 4px solid #EAE3F2; border-top: 4px solid var(--pride-purple);
+            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
+        }
+        .loading-text { color: var(--text-main); font-size: 0.95rem; font-weight: 600; letter-spacing: 1px; animation: pulseText 1.5s infinite; }
+        
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    </style>
+</head>
+<body>
+
+    <div class="bg-mesh"></div>
+
+    <!-- 1. WELCOME & GENDER SCREEN -->
+    <section id="welcome-screen" class="screen active">
+        <div class="container glass-panel">
+            <h1 class="text-rainbow">Pride Check! บุคลิกไหน ที่ใช่คุณ</h1>
+            <p style="margin-bottom: 30px;">ค้นหาตัวตนผ่านการสังเกตของคุณ</p>
+            
+            <div class="divider"></div>
+
+            <h3>โปรดระบุเพศของคุณเพื่อเริ่มต้น</h3>
+            <div class="gender-grid">
+                <button onclick="setGender('Male', this)" class="btn-gender" aria-label="ชาย">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="6"></circle><path d="M14.5 9.5L21 3"></path><path d="M16 3h5v5"></path></svg>
+                </button>
+                <button onclick="setGender('Female', this)" class="btn-gender" aria-label="หญิง">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="6"></circle><path d="M12 16v6"></path><path d="M9 19h6"></path></svg>
+                </button>
+                <button onclick="setGender('Unspecified', this)" class="btn-text">ไม่ระบุ</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. HOW TO PLAY SCREEN -->
+    <section id="how-to-screen" class="screen">
+        <div class="container glass-panel">
+            <h2 class="text-rainbow">วิธีการเล่น</h2>
+            
+            <div class="rules-list">
+                <div class="rule-item">
+                    <div class="rule-number">1</div>
+                    <p>ในภาพจะมีจุดผิดปกติซ่อนอยู่ทั้งหมด 3 จุด คุณมีโอกาสกดได้ <strong>3 ครั้งเท่านั้น</strong></p>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-number">2</div>
+                    <p>พยายามสังเกตและกดจุดที่คิดว่าผิดปกติ</p>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-number">3</div>
+                    <p>ลำดับการตัดสินใจของคุณ (ถูก/ผิด) จะสะท้อนตัวตนของคุณ</p>
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="btn-rainbow">เริ่มค้นหาตัวตนกันเลย!</button>
+        </div>
+    </section>
+
+    <!-- 3. GAME SCREEN -->
+    <section id="game-screen" class="screen">
+        <div class="container-game">
+            <!-- HUD -->
+            <div class="hud">
+                <div class="hud-text">โอกาสกด: <span id="hud-attempts" class="hud-value">3</span></div>
+                <div class="progress-dots" id="hud-progress">
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                </div>
+            </div>
+
+            <!-- Image Area -->
+            <div class="game-area-container">
+                <div id="game-image-wrapper">
+                    <img id="game-image" src="" alt="Game Image" ondragstart="return false;">
+                    <div id="marker-layer" onclick="handleClick(event)"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. RESULT SCREEN -->
+    <section id="result-screen" class="screen">
+        <div class="container glass-panel" style="overflow: hidden;">
+            <div class="result-decor-1"></div>
+            <div class="result-decor-2"></div>
+            
+            <div class="result-content">
+                <span class="result-label">ผลลัพธ์ของคุณ</span>
+                <h1 id="res-title" class="result-title text-rainbow">นักวิเคราะห์แบบเป็นระบบ</h1>
+                <p id="res-desc" style="margin-bottom: 40px;">คำอธิบาย...</p>
+                
+                <button onclick="resetGame()" class="btn-rainbow">เล่นใหม่อีกครั้ง</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loading-overlay">
+        <div class="loader"></div>
+        <p class="loading-text">กำลังเชื่อมต่อ...</p>
+    </div>
+
+    <!-- =========================================
+         JAVASCRIPT LOGIC (คงเดิม 100%)
+    ========================================= -->
+    <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw2MvQ_ILrRay84PluppRbuSKhNbOki7gz7NdkwvPCw9f665d6SJXMIByvPAeM2z6Q/exec";
+
+        // Generate or Get Visitor ID
+        function getVisitorId() {
+            let vid = localStorage.getItem('visitor_id');
+            if (!vid) {
+                vid = 'v_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+                localStorage.setItem('visitor_id', vid);
+            }
+            return vid;
+        }
+
+        // อัปเดตโครงสร้าง Mockup เผื่อไว้กรณีดึงข้อมูลไม่สำเร็จ
+        let PATTERN_DB = {
+            XX: { "1,2,3": { title: "นักวิเคราะห์แบบเป็นระบบ (หญิง)", desc: "คุณมองโลกตามความเป็นจริงและมีเหตุผลเสมอ" } },
+            XY: { "1,2,3": { title: "นักวิเคราะห์แบบเป็นระบบ (ชาย)", desc: "คุณมองโลกตามความเป็นจริงและมีเหตุผลเสมอ" } },
+            OT: { "1,2,3": { title: "นักวิเคราะห์แบบเป็นระบบ (ทั่วไป)", desc: "คุณมองโลกตามความเป็นจริงและมีเหตุผลเสมอ" } }
+        };
+
+        const MOCK_IMAGES = [
+            {
+                imageId: 101,
+                imageUrl: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
+                title: "คาเฟ่ซ่อนรัก",
+                category: "cafe",
+                difficulty: "easy",
+                radius: 10,
+                points: [
+                    { id: 1, x: 20, y: 30 },
+                    { id: 2, x: 50, y: 60 },
+                    { id: 3, x: 80, y: 40 }
+                ]
+            }
+        ];
+
+        let state = {
+            playerGender: null,
+            currentImage: null,
+            answers: [],
+            attempts: 0,
+            maxAttempts: 3,
+            correctCount: 0,
+            wrongCount: 0,
+            startTime: null,
+            timeUsed: 0
+        };
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loading-overlay');
+            if(show) overlay.classList.add('visible');
+            else overlay.classList.remove('visible');
+        }
+
+        function navTo(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        async function fetchGameData() {
+            showLoading(true);
+            try {
+                if(GAS_URL === "YOUR_GAS_URL_HERE") throw new Error("URL_NOT_SET");
+                
+                const response = await fetch(GAS_URL);
+                const data = await response.json();
+
+                // อัปเดต Pattern ทั้ง 3 หมวดจากหลังบ้าน
+                if (data.patterns) {
+                    if (data.patterns.XX) PATTERN_DB.XX = data.patterns.XX;
+                    if (data.patterns.XY) PATTERN_DB.XY = data.patterns.XY;
+                    if (data.patterns.OT) PATTERN_DB.OT = data.patterns.OT;
+                }
+                
+                if (data.images && data.images.length > 0) {
+                    setupRandomImage(data.images);
+                } else {
+                    setupRandomImage(MOCK_IMAGES);
+                }
+            } catch (error) {
+                console.warn("Using mock data...", error);
+                setupRandomImage(MOCK_IMAGES);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function setupRandomImage(imageArray) {
+            const randomIndex = Math.floor(Math.random() * imageArray.length);
+            state.currentImage = imageArray[randomIndex];
+            
+            const imgEl = document.getElementById('game-image');
+            imgEl.onload = () => { showLoading(false); }
+            imgEl.onerror = () => { showLoading(false); }
+            imgEl.src = state.currentImage.imageUrl;
+            showLoading(true); 
+        }
+
+        function setGender(genderVal, btnElement) {
+            // Haptic feedback (ถ้าเบราว์เซอร์รองรับ)
+            if (navigator.vibrate) navigator.vibrate(50);
+
+            let thGender = "ไม่ระบุ";
+            if (genderVal === 'Male') thGender = "ชาย";
+            if (genderVal === 'Female') thGender = "หญิง";
+            state.playerGender = thGender;
+
+            document.querySelectorAll('.btn-gender').forEach(btn => btn.classList.remove('selected'));
+            if(btnElement.classList.contains('btn-gender')) btnElement.classList.add('selected');
+
+            setTimeout(() => {
+                navTo('how-to-screen');
+            }, 300);
+        }
+
+        function startGame() {
+            state.answers = [];
+            state.attempts = 0;
+            state.correctCount = 0;
+            state.wrongCount = 0;
+            state.startTime = new Date();
+            
+            document.getElementById('marker-layer').innerHTML = '';
+            updateHUD();
+            
+            if (!state.currentImage) {
+                fetchGameData().then(() => navTo('game-screen'));
+            } else {
+                navTo('game-screen');
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('hud-attempts').innerText = state.maxAttempts - state.attempts;
+            
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, index) => {
+                if (index < state.attempts) {
+                    dot.classList.add('filled');
+                } else {
+                    dot.classList.remove('filled');
+                }
+            });
+        }
+
+        function handleClick(e) {
+            if (state.attempts >= state.maxAttempts) return;
+
+            const rect = e.target.getBoundingClientRect();
+            const clickX = ((e.clientX - rect.left) / rect.width) * 100;
+            const clickY = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            checkHit(clickX, clickY, e.clientX - rect.left, e.clientY - rect.top);
+        }
+
+        function checkHit(px, py, pixelX, pixelY) {
+            const radius = state.currentImage.radius || 10;
+            let hitPoint = null;
+
+            for (let pt of state.currentImage.points) {
+                if (state.answers.includes(pt.id)) continue;
+                
+                let dx = px - pt.x;
+                let dy = py - pt.y;
+                let distance = Math.sqrt(dx*dx + dy*dy);
+                
+                if (distance <= radius) {
+                    hitPoint = pt;
+                    break;
+                }
+            }
+
+            state.attempts++;
+
+            if (hitPoint) {
+                if (navigator.vibrate) navigator.vibrate([50, 50, 50]); // Success pattern
+                state.answers.push(hitPoint.id);
+                state.correctCount++;
+                drawMarker(pixelX, pixelY, true);
+            } else {
+                if (navigator.vibrate) navigator.vibrate(200); // Error pattern
+                state.answers.push("W");
+                state.wrongCount++;
+                drawMarker(pixelX, pixelY, false);
+            }
+
+            updateHUD();
+
+            if (state.attempts >= state.maxAttempts) {
+                setTimeout(endGame, 800);
+            }
+        }
+
+        function drawMarker(x, y, isCorrect) {
+            const layer = document.getElementById('marker-layer');
+            const marker = document.createElement('div');
+            marker.className = `marker ${isCorrect ? 'correct' : 'wrong'}`;
+            marker.style.left = `${x}px`;
+            marker.style.top = `${y}px`;
+            layer.appendChild(marker);
+        }
+
+        function endGame() {
+            state.timeUsed = Math.floor((new Date() - state.startTime) / 1000);
+            
+            // เช็คเพศที่เลือก เพื่อดึงฐานข้อมูลให้ตรงจุด
+            let genderKey = "OT"; // ค่าเริ่มต้นสำหรับ ไม่ระบุ
+            if (state.playerGender === "หญิง") genderKey = "XX";
+            else if (state.playerGender === "ชาย") genderKey = "XY";
+
+            const patternKey = state.answers.join(",");
+            const currentGenderDB = PATTERN_DB[genderKey] || PATTERN_DB.OT;
+            const resultData = currentGenderDB[patternKey] || { title: "มีเอกลักษณ์เฉพาะตัว", desc: "รูปแบบของคุณมีความโดดเด่นไม่ซ้ำใคร" };
+            
+            document.getElementById('res-title').innerText = resultData.title;
+            document.getElementById('res-desc').innerText = resultData.desc;
+
+            submitResult(patternKey);
+            navTo('result-screen');
+        }
+
+        function submitResult(patternKey) {
+            if(GAS_URL === "YOUR_GAS_URL_HERE") return;
+
+            const payload = {
+                visitorId: getVisitorId(),
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString(),
+                gender: state.playerGender,
+                imageId: state.currentImage.imageId,
+                category: state.currentImage.category,
+                patternNumber: patternKey,
+                answerSequence: patternKey,
+                correctCount: state.correctCount,
+                wrongCount: state.wrongCount,
+                timeUsed: state.timeUsed
+            };
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(e => console.log("Post error:", e));
+        }
+
+        function resetGame() {
+            state.currentImage = null;
+            document.querySelectorAll('.btn-gender').forEach(btn => btn.classList.remove('selected'));
+            navTo('how-to-screen');
+            fetchGameData(); 
+        }
+
+        // เริ่มต้นดึงข้อมูลทันทีเมื่อเปิดเว็บ
+        window.onload = () => {
+            fetchGameData();
+        };
+    </script>
+</body>
+</html>
