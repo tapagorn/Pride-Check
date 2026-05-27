@@ -14,16 +14,16 @@
             /* Pride Colors */
             --pride-red: #E50000;
             --pride-orange: #FF8D00;
-            --pride-yellow: #F0CC00; /* Adjusted for better contrast on light */
+            --pride-yellow: #F0CC00;
             --pride-green: #028F00;
             --pride-blue: #004CFF;
             --pride-purple: #8B00FF;
             
             /* Light Theme Colors */
-            --bg-main: #F7F5FA; /* Soft light lavender/grey */
+            --bg-main: #F7F5FA;
             --card-bg: rgba(255, 255, 255, 0.75);
-            --text-main: #1D1128; /* Dark purple/black */
-            --text-sec: #685E73; /* Muted dark grey/purple */
+            --text-main: #1D1128;
+            --text-sec: #685E73;
             
             /* Gradients */
             --rainbow-grad: linear-gradient(90deg, var(--pride-red) 0%, var(--pride-orange) 18%, var(--pride-yellow) 36%, var(--pride-green) 54%, var(--pride-blue) 72%, var(--pride-purple) 100%);
@@ -82,7 +82,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Glassmorphism Panels (Light Mode) */
+        /* Glassmorphism Panels */
         .glass-panel {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -106,7 +106,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            /* subtle shadow for readability on light */
             text-shadow: 0px 2px 4px rgba(0,0,0,0.05); 
         }
         
@@ -133,10 +132,10 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 6px 20px rgba(229, 0, 0, 0.25), 0 0 15px rgba(139, 0, 255, 0.15);
-            margin-top: 20px;
         }
-        .btn-rainbow:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(229, 0, 0, 0.3), 0 0 20px rgba(139, 0, 255, 0.2); }
-        .btn-rainbow:active { transform: scale(0.96); }
+        .btn-rainbow:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(229, 0, 0, 0.3), 0 0 20px rgba(139, 0, 255, 0.2); }
+        .btn-rainbow:active:not(:disabled) { transform: scale(0.96); }
+        .btn-rainbow:disabled { opacity: 0.4; cursor: not-allowed; animation: none; filter: grayscale(50%); box-shadow: none; }
         
         @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
@@ -171,17 +170,34 @@
         .btn-text {
             background: transparent; border: none; color: var(--text-sec);
             padding: 12px 24px; font-size: 0.95rem; font-weight: 500;
-            cursor: pointer; transition: color 0.2s; margin-top: 8px; border-radius: 16px;
+            cursor: pointer; transition: color 0.2s; border-radius: 16px;
         }
         .btn-text:hover { color: var(--text-main); }
+        .btn-outline { border: 2px solid #EAE3F2; background: rgba(255,255,255,0.5); }
 
-        /* How to Play List */
-        .rules-list { text-align: left; margin-bottom: 10px; }
+        /* Modal (How to Play) */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(29, 17, 40, 0.6); backdrop-filter: blur(5px);
+            z-index: 999; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px;
+        }
+        .modal-overlay.visible { opacity: 1; pointer-events: all; }
+        .modal-content {
+            width: 100%; max-width: 400px; padding: 30px 25px;
+            transform: translateY(20px); transition: transform 0.3s ease;
+        }
+        .modal-overlay.visible .modal-content { transform: translateY(0); }
+        .close-btn {
+            position: absolute; top: 15px; right: 15px;
+            background: none; border: none; font-size: 1.5rem;
+            color: var(--text-sec); cursor: pointer; padding: 5px 10px;
+        }
+        .rules-list { text-align: left; }
         .rule-item { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; }
         .rule-number {
             width: 32px; height: 32px; border-radius: 50%;
-            background: var(--rainbow-grad);
-            display: flex; align-items: center; justify-content: center;
+            background: var(--rainbow-grad); display: flex; align-items: center; justify-content: center;
             font-weight: 700; color: white; flex-shrink: 0;
             box-shadow: 0 4px 10px rgba(139,0,255,0.2);
         }
@@ -214,7 +230,7 @@
         #game-image { display: block; width: 100%; height: auto; pointer-events: none; user-select: none; }
         #marker-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
 
-        /* Markers */
+        /* Markers (using Percentage positions) */
         .marker { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; z-index: 10; }
         .marker.correct {
             border: 3px solid var(--pride-green); background: rgba(2, 143, 0, 0.2);
@@ -225,6 +241,12 @@
             border: 3px solid var(--pride-red); background: rgba(229, 0, 0, 0.2);
             box-shadow: 0 0 15px var(--pride-red), inset 0 0 10px var(--pride-red);
             animation: shakeError 0.4s ease-in-out forwards;
+        }
+        .marker.solution {
+            border: 3px dashed #685E73; background: rgba(104, 94, 115, 0.25);
+            box-shadow: 0 0 10px rgba(104, 94, 115, 0.15);
+            width: 44px; height: 44px;
+            animation: fadeIn 0.8s ease-out forwards;
         }
 
         @keyframes pulseSuccess { 0% { width: 0; height: 0; opacity: 1; } 50% { width: 44px; height: 44px; opacity: 0.8; } 100% { width: 34px; height: 34px; opacity: 1; } }
@@ -237,12 +259,18 @@
             100% { transform: translate(-50%, -50%); width:28px; height:28px;}
         }
 
-        /* Result Screen Decor */
+        /* Result Section Inside Game */
+        #result-section {
+            display: none; /* hidden initially */
+            margin-top: 25px;
+            overflow: hidden;
+            animation: fadeIn 0.6s ease forwards;
+        }
         .result-decor-1 { position: absolute; top: -40px; right: -40px; width: 150px; height: 150px; background: var(--pride-purple); border-radius: 50%; filter: blur(50px); opacity: 0.15; z-index: 0; pointer-events: none; }
         .result-decor-2 { position: absolute; bottom: -40px; left: -40px; width: 150px; height: 150px; background: var(--pride-orange); border-radius: 50%; filter: blur(50px); opacity: 0.15; z-index: 0; pointer-events: none;}
-        .result-content { position: relative; z-index: 10; }
+        .result-content { position: relative; z-index: 10; text-align: center; }
         .result-label { font-size: 0.85rem; font-weight: 700; color: var(--text-sec); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
-        .result-title { font-size: clamp(1.8rem, 5vw, 2.2rem); font-weight: 800; margin-bottom: 20px; line-height: 1.3; }
+        .result-title { font-size: clamp(1.6rem, 4vw, 2rem); font-weight: 800; margin-bottom: 20px; line-height: 1.3; }
 
         /* Loading Overlay */
         #loading-overlay {
@@ -252,7 +280,6 @@
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         #loading-overlay.visible { opacity: 1; pointer-events: all; }
-        
         .loader {
             width: 50px; height: 50px;
             border: 4px solid #EAE3F2; border-top: 4px solid var(--pride-purple);
@@ -268,16 +295,18 @@
 
     <div class="bg-mesh"></div>
 
-    <!-- 1. WELCOME & GENDER SCREEN -->
+    <!-- =========================================
+         1. HOME SCREEN (Gender + Start)
+    ========================================= -->
     <section id="welcome-screen" class="screen active">
         <div class="container glass-panel">
-            <h1 class="text-rainbow">Pride Check! บุคลิกไหน ที่ใช่คุณ</h1>
+            <h1 class="text-rainbow">Pride Check!<br>บุคลิกไหน ที่ใช่คุณ</h1>
             <p style="margin-bottom: 30px;">ค้นหาตัวตนผ่านการสังเกตของคุณ</p>
             
             <div class="divider"></div>
 
             <h3>โปรดระบุเพศของคุณเพื่อเริ่มต้น</h3>
-            <div class="gender-grid">
+            <div class="gender-grid mb-6">
                 <button onclick="setGender('Male', this)" class="btn-gender" aria-label="ชาย">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="6"></circle><path d="M14.5 9.5L21 3"></path><path d="M16 3h5v5"></path></svg>
                 </button>
@@ -286,18 +315,25 @@
                 </button>
                 <button onclick="setGender('Unspecified', this)" class="btn-text">ไม่ระบุ</button>
             </div>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+                <button id="btn-start" onclick="startGame()" class="btn-rainbow" disabled>เริ่มค้นหาตัวตนกันเลย!</button>
+                <button onclick="toggleModal(true)" class="btn-text btn-outline">📖 วิธีการเล่น</button>
+            </div>
         </div>
     </section>
 
-    <!-- 2. HOW TO PLAY SCREEN -->
-    <section id="how-to-screen" class="screen">
-        <div class="container glass-panel">
-            <h2 class="text-rainbow">วิธีการเล่น</h2>
+    <!-- Modal วิธีเล่น -->
+    <div id="rules-modal" class="modal-overlay">
+        <div class="modal-content glass-panel">
+            <button class="close-btn" onclick="toggleModal(false)">✕</button>
+            <h2 class="text-rainbow text-center">วิธีการเล่น</h2>
             
             <div class="rules-list">
                 <div class="rule-item">
                     <div class="rule-number">1</div>
-                    <p>ในภาพจะมีจุดผิดปกติซ่อนอยู่ทั้งหมด 3 จุด คุณมีโอกาสกดได้ <strong>3 ครั้งเท่านั้น</strong></p>
+                    <p>ในภาพจะมีจุดผิดปกติซ่อนอยู่ 3 จุด คุณมีโอกาสกดได้ <strong>3 ครั้งเท่านั้น</strong></p>
                 </div>
                 <div class="rule-item">
                     <div class="rule-number">2</div>
@@ -305,19 +341,21 @@
                 </div>
                 <div class="rule-item">
                     <div class="rule-number">3</div>
-                    <p>ลำดับการตัดสินใจของคุณ (ถูก/ผิด) จะสะท้อนตัวตนของคุณ</p>
+                    <p>ลำดับการตัดสินใจของคุณ จะสะท้อนตัวตนของคุณเมื่อเล่นจบ</p>
                 </div>
             </div>
-
-            <button onclick="startGame()" class="btn-rainbow">เริ่มค้นหาตัวตนกันเลย!</button>
+            <button onclick="toggleModal(false)" class="btn-rainbow" style="margin-top: 20px;">เข้าใจแล้ว</button>
         </div>
-    </section>
+    </div>
 
-    <!-- 3. GAME SCREEN -->
+    <!-- =========================================
+         2. GAME & RESULT SCREEN
+    ========================================= -->
     <section id="game-screen" class="screen">
         <div class="container-game">
+            
             <!-- HUD -->
-            <div class="hud">
+            <div class="hud" id="game-hud">
                 <div class="hud-text">โอกาสกด: <span id="hud-attempts" class="hud-value">3</span></div>
                 <div class="progress-dots" id="hud-progress">
                     <div class="progress-dot"></div>
@@ -333,22 +371,23 @@
                     <div id="marker-layer" onclick="handleClick(event)"></div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- 4. RESULT SCREEN -->
-    <section id="result-screen" class="screen">
-        <div class="container glass-panel" style="overflow: hidden;">
-            <div class="result-decor-1"></div>
-            <div class="result-decor-2"></div>
-            
-            <div class="result-content">
-                <span class="result-label">ผลลัพธ์ของคุณ</span>
-                <h1 id="res-title" class="result-title text-rainbow">นักวิเคราะห์แบบเป็นระบบ</h1>
-                <p id="res-desc" style="margin-bottom: 40px;">คำอธิบาย...</p>
+            <!-- Result Section (Shows inside game screen) -->
+            <div id="result-section" class="glass-panel">
+                <div class="result-decor-1"></div>
+                <div class="result-decor-2"></div>
                 
-                <button onclick="resetGame()" class="btn-rainbow">เล่นใหม่อีกครั้ง</button>
+                <div class="result-content">
+                    <span class="result-label">ผลลัพธ์ของคุณ</span>
+                    <h1 id="res-title" class="result-title text-rainbow">นักวิเคราะห์แบบเป็นระบบ</h1>
+                    <p id="res-desc" style="margin-bottom: 25px;">คำอธิบาย...</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button onclick="resetGame()" class="btn-rainbow" style="margin-top:0;">เล่นใหม่อีกครั้ง</button>
+                    </div>
+                </div>
             </div>
+
         </div>
     </section>
 
@@ -359,12 +398,11 @@
     </div>
 
     <!-- =========================================
-         JAVASCRIPT LOGIC (คงเดิม 100%)
+         JAVASCRIPT LOGIC
     ========================================= -->
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbw2MvQ_ILrRay84PluppRbuSKhNbOki7gz7NdkwvPCw9f665d6SJXMIByvPAeM2z6Q/exec";
 
-        // Generate or Get Visitor ID
         function getVisitorId() {
             let vid = localStorage.getItem('visitor_id');
             if (!vid) {
@@ -374,7 +412,6 @@
             return vid;
         }
 
-        // อัปเดตโครงสร้าง Mockup เผื่อไว้กรณีดึงข้อมูลไม่สำเร็จ
         let PATTERN_DB = {
             XX: { "1,2,3": { title: "นักวิเคราะห์แบบเป็นระบบ (หญิง)", desc: "คุณมองโลกตามความเป็นจริงและมีเหตุผลเสมอ" } },
             XY: { "1,2,3": { title: "นักวิเคราะห์แบบเป็นระบบ (ชาย)", desc: "คุณมองโลกตามความเป็นจริงและมีเหตุผลเสมอ" } },
@@ -421,6 +458,12 @@
             window.scrollTo(0, 0);
         }
 
+        function toggleModal(show) {
+            const modal = document.getElementById('rules-modal');
+            if(show) modal.classList.add('visible');
+            else modal.classList.remove('visible');
+        }
+
         async function fetchGameData() {
             showLoading(true);
             try {
@@ -429,7 +472,6 @@
                 const response = await fetch(GAS_URL);
                 const data = await response.json();
 
-                // อัปเดต Pattern ทั้ง 3 หมวดจากหลังบ้าน
                 if (data.patterns) {
                     if (data.patterns.XX) PATTERN_DB.XX = data.patterns.XX;
                     if (data.patterns.XY) PATTERN_DB.XY = data.patterns.XY;
@@ -461,7 +503,6 @@
         }
 
         function setGender(genderVal, btnElement) {
-            // Haptic feedback (ถ้าเบราว์เซอร์รองรับ)
             if (navigator.vibrate) navigator.vibrate(50);
 
             let thGender = "ไม่ระบุ";
@@ -472,12 +513,14 @@
             document.querySelectorAll('.btn-gender').forEach(btn => btn.classList.remove('selected'));
             if(btnElement.classList.contains('btn-gender')) btnElement.classList.add('selected');
 
-            setTimeout(() => {
-                navTo('how-to-screen');
-            }, 300);
+            // Enable Start Button
+            const startBtn = document.getElementById('btn-start');
+            startBtn.disabled = false;
         }
 
         function startGame() {
+            if (!state.playerGender) return;
+
             state.answers = [];
             state.attempts = 0;
             state.correctCount = 0;
@@ -485,6 +528,8 @@
             state.startTime = new Date();
             
             document.getElementById('marker-layer').innerHTML = '';
+            document.getElementById('result-section').style.display = 'none'; // Hide result
+            document.getElementById('game-hud').style.display = 'flex'; // Show HUD
             updateHUD();
             
             if (!state.currentImage) {
@@ -511,21 +556,21 @@
             if (state.attempts >= state.maxAttempts) return;
 
             const rect = e.target.getBoundingClientRect();
-            const clickX = ((e.clientX - rect.left) / rect.width) * 100;
-            const clickY = ((e.clientY - rect.top) / rect.height) * 100;
+            const pctX = ((e.clientX - rect.left) / rect.width) * 100;
+            const pctY = ((e.clientY - rect.top) / rect.height) * 100;
             
-            checkHit(clickX, clickY, e.clientX - rect.left, e.clientY - rect.top);
+            checkHit(pctX, pctY);
         }
 
-        function checkHit(px, py, pixelX, pixelY) {
+        function checkHit(pctX, pctY) {
             const radius = state.currentImage.radius || 10;
             let hitPoint = null;
 
             for (let pt of state.currentImage.points) {
-                if (state.answers.includes(pt.id)) continue;
+                if (state.answers.includes(pt.id)) continue; // ไม่เช็คจุดที่กดถูกไปแล้ว
                 
-                let dx = px - pt.x;
-                let dy = py - pt.y;
+                let dx = pctX - pt.x;
+                let dy = pctY - pt.y;
                 let distance = Math.sqrt(dx*dx + dy*dy);
                 
                 if (distance <= radius) {
@@ -537,38 +582,50 @@
             state.attempts++;
 
             if (hitPoint) {
-                if (navigator.vibrate) navigator.vibrate([50, 50, 50]); // Success pattern
+                if (navigator.vibrate) navigator.vibrate([50, 50, 50]); 
                 state.answers.push(hitPoint.id);
                 state.correctCount++;
-                drawMarker(pixelX, pixelY, true);
+                drawMarker(pctX, pctY, 'correct');
             } else {
-                if (navigator.vibrate) navigator.vibrate(200); // Error pattern
+                if (navigator.vibrate) navigator.vibrate(200); 
                 state.answers.push("W");
                 state.wrongCount++;
-                drawMarker(pixelX, pixelY, false);
+                drawMarker(pctX, pctY, 'wrong');
             }
 
             updateHUD();
 
             if (state.attempts >= state.maxAttempts) {
-                setTimeout(endGame, 800);
+                // เพิ่ม delay เล็กน้อยให้ผู้เล่นเห็นมาร์คเกอร์จุดที่ 3 ก่อนเฉลยขึ้น
+                setTimeout(endGame, 600);
             }
         }
 
-        function drawMarker(x, y, isCorrect) {
+        function drawMarker(pctX, pctY, type) {
             const layer = document.getElementById('marker-layer');
             const marker = document.createElement('div');
-            marker.className = `marker ${isCorrect ? 'correct' : 'wrong'}`;
-            marker.style.left = `${x}px`;
-            marker.style.top = `${y}px`;
+            marker.className = `marker ${type}`;
+            marker.style.left = `${pctX}%`;
+            marker.style.top = `${pctY}%`;
             layer.appendChild(marker);
+        }
+
+        function showSolutions() {
+            // กรองหาเฉพาะ ID (ตัวเลข) ที่กดตอบถูกไปแล้ว
+            const answeredIds = state.answers.filter(a => typeof a === 'number');
+            
+            // วนลูปจุดที่ถูกต้องทั้งหมด หากอันไหนยังไม่ถูกตอบ ให้แสดงเป็นวงกลมสีเทาเฉลย
+            state.currentImage.points.forEach(pt => {
+                if (!answeredIds.includes(pt.id)) {
+                    drawMarker(pt.x, pt.y, 'solution');
+                }
+            });
         }
 
         function endGame() {
             state.timeUsed = Math.floor((new Date() - state.startTime) / 1000);
             
-            // เช็คเพศที่เลือก เพื่อดึงฐานข้อมูลให้ตรงจุด
-            let genderKey = "OT"; // ค่าเริ่มต้นสำหรับ ไม่ระบุ
+            let genderKey = "OT";
             if (state.playerGender === "หญิง") genderKey = "XX";
             else if (state.playerGender === "ชาย") genderKey = "XY";
 
@@ -580,7 +637,16 @@
             document.getElementById('res-desc').innerText = resultData.desc;
 
             submitResult(patternKey);
-            navTo('result-screen');
+
+            // แสดงเฉลย และกล่องผลลัพธ์ในหน้าเดียวกัน
+            document.getElementById('game-hud').style.display = 'none'; // ซ่อนแถบนับครั้งเพื่อลดความเกะกะ
+            document.getElementById('result-section').style.display = 'block';
+            showSolutions();
+
+            // เลื่อนหน้าจอลงไปที่ผลลัพธ์อัตโนมัติ
+            setTimeout(() => {
+                document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 100);
         }
 
         function submitResult(patternKey) {
@@ -609,13 +675,14 @@
         }
 
         function resetGame() {
+            // เมื่อกดเล่นใหม่ ให้ล้างหน้าจอ ดึงรูปใหม่รอไว้ และกลับไปหน้าหลัก
             state.currentImage = null;
-            document.querySelectorAll('.btn-gender').forEach(btn => btn.classList.remove('selected'));
-            navTo('how-to-screen');
+            document.getElementById('marker-layer').innerHTML = '';
+            document.getElementById('result-section').style.display = 'none';
+            navTo('welcome-screen');
             fetchGameData(); 
         }
 
-        // เริ่มต้นดึงข้อมูลทันทีเมื่อเปิดเว็บ
         window.onload = () => {
             fetchGameData();
         };
